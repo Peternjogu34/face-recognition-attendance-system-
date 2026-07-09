@@ -1,0 +1,7 @@
+pip install fastapi uvicorn
+pip install sqlalchemy
+pip install face_recognition
+pip install opencv-python
+pip install python-multipart
+pip install pandas
+pip install pillow
