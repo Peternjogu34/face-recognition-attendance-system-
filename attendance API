@@ -1,0 +1,59 @@
+from fastapi import APIRouter
+from fastapi import UploadFile
+from fastapi import File
+
+import face_recognition
+import pickle
+import numpy as np
+
+router=APIRouter(prefix="/attendance")
+
+@router.post("/recognize")
+
+async def recognize(image:UploadFile=File(...)):
+
+    with open("trainer/encodings.pkl","rb") as f:
+        data=pickle.load(f)
+
+    contents=await image.read()
+
+    import cv2
+
+    nparr=np.frombuffer(contents,np.uint8)
+
+    img=cv2.imdecode(nparr,cv2.IMREAD_COLOR)
+
+    rgb=cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
+
+    faces=face_recognition.face_encodings(rgb)
+
+    if len(faces)==0:
+
+        return {
+            "message":"No face detected"
+        }
+
+    encoding=faces[0]
+
+    matches=face_recognition.compare_faces(
+        data["encodings"],
+        encoding
+    )
+
+    if True in matches:
+
+        index=matches.index(True)
+
+        return {
+
+            "recognized":True,
+
+            "student":data["names"][index]
+
+        }
+
+    return {
+
+        "recognized":False
+
+    }
