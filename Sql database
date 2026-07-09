@@ -1,0 +1,23 @@
+import sqlite3
+
+connection = sqlite3.connect("database/attendance.db")
+
+cursor = connection.cursor()
+
+cursor.execute("""
+
+CREATE TABLE IF NOT EXISTS attendance(
+
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+name TEXT,
+
+time TEXT
+
+)
+
+""")
+
+connection.commit()
+
+connection.close()
