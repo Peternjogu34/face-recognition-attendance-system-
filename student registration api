@@ -1,0 +1,28 @@
+from fastapi import APIRouter
+from fastapi import UploadFile
+from fastapi import File
+import shutil
+import os
+
+router = APIRouter(prefix="/students")
+
+@router.post("/register/{name}")
+
+async def register(
+    name:str,
+    image:UploadFile=File(...)
+):
+
+    folder=f"dataset/{name}"
+
+    os.makedirs(folder,exist_ok=True)
+
+    filename=f"{folder}/{image.filename}"
+
+    with open(filename,"wb") as buffer:
+        shutil.copyfileobj(image.file,buffer)
+
+    return {
+        "status":"saved",
+        "student":name
+    }
