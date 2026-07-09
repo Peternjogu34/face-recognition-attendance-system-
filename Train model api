@@ -1,0 +1,45 @@
+from fastapi import APIRouter
+
+import face_recognition
+import pickle
+import os
+
+router=APIRouter(prefix="/training")
+
+@router.post("/train")
+
+def train():
+
+    encodings=[]
+    names=[]
+
+    for person in os.listdir("dataset"):
+
+        folder=os.path.join("dataset",person)
+
+        for file in os.listdir(folder):
+
+            image=face_recognition.load_image_file(
+                os.path.join(folder,file)
+            )
+
+            face=face_recognition.face_encodings(image)
+
+            if face:
+
+                encodings.append(face[0])
+                names.append(person)
+
+    with open("trainer/encodings.pkl","wb") as f:
+
+        pickle.dump(
+            {
+                "encodings":encodings,
+                "names":names
+            },
+            f
+        )
+
+    return {
+        "trained":len(names)
+    }
